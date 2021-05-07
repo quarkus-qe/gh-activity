@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class GitHubService {
@@ -80,10 +81,13 @@ public class GitHubService {
     private List<ActivityEntry> extractActivities(JsonArray nodesJson) {
         List<ActivityEntry> activities= new ArrayList<>(nodesJson.size());
         for (Object nodeJson : nodesJson) {
+            JsonObject objectJson = (JsonObject) nodeJson;
             ActivityEntry activity = new ActivityEntry(
-                    ((JsonObject) nodeJson).getInstant("createdAt"),
-                    ((JsonObject) nodeJson).getJsonObject("repository").getString("nameWithOwner"),
-                    ((JsonObject) nodeJson).getString("url")
+                    objectJson.getInstant("createdAt"),
+                    objectJson.getJsonObject("repository").getString("nameWithOwner"),
+                    objectJson.getString("url"),
+                    objectJson.getString("state"),
+                    extractLabels(objectJson)
             );
             activities.add(activity);
         }
@@ -96,6 +100,17 @@ public class GitHubService {
         public static native TemplateInstance latestActivity(Collection<String> logins, Integer limit);
     }
 
+    private String extractLabels(JsonObject objectJson) {
+        String labels = "";
+        if (objectJson.containsKey("labels")) {
+            labels = objectJson.getJsonObject("labels").getJsonArray("nodes")
+                    .stream()
+                    .map(json -> ((JsonObject) json).getString("name"))
+                    .collect(Collectors.joining(","));
+        }
+
+        return labels;
+    }
 
     private void handleErrors(JsonObject response) throws IOException {
         JsonArray errors = response.getJsonArray("errors");

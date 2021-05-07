@@ -12,6 +12,12 @@
         repository {
           nameWithOwner
         }
+        labels(first: 20) {
+          nodes {
+            name
+          }
+        }
+        state
       }
     }
     issues(first: {limit}, orderBy: \{field: CREATED_AT, direction: DESC\}) {
@@ -21,6 +27,12 @@
         repository {
           nameWithOwner
         }
+        labels(first: 20) {
+          nodes {
+            name
+          }
+        }
+        state
       }
     }
     issueComments(first: {limit}, orderBy: \{field: UPDATED_AT, direction: DESC\}) {

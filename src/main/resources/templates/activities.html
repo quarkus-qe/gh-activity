@@ -14,8 +14,8 @@
     <img src="{activity.user.avatarUrl}" alt="{activity.user.name}" height="40">
     &nbsp;
     <big><a href="{activity.user.url}" >{#if activity.user.name} {activity.user.name} {#else} {activity.user.login} {/if}</a></big>
-    &nbsp;&nbsp; ( {activity.pullRequestsActivities.size} <a href="#{activity.user.login}-prs" >Pull Requests</a> |
-    {activity.issuesActivities.size} <a href="#{activity.user.login}-issues" >Issues</a> |
+    &nbsp;&nbsp; ( {activity.pullRequestsActivities.size} <a href="#{activity.user.login}-prs" >Pull Requests ({activity.openPullRequestsCount} open)</a> |
+    {activity.issuesActivities.size} <a href="#{activity.user.login}-issues" >Issues ({activity.openIssuesCount} open)</a> |
     {activity.issueCommentsActivities.size} <a href="#{activity.user.login}-issue-comments" >Issue comments</a> )
 
     <a name="{activity.user.login}-prs"></a>
@@ -31,6 +31,7 @@
             <td>{inject:prettyTime.format(activityEntry.created)} ({activityEntry.created})</td>
             <td>{activityEntry.repository}</td>
             <td><a href="{activityEntry.url}">{activityEntry.url}</a></td>
+            <td>{activityEntry.state}</td>
         </tr>
         {/for}
         </tbody>
@@ -49,6 +50,7 @@
             <td>{inject:prettyTime.format(activityEntry.created)} ({activityEntry.created})</td>
             <td>{activityEntry.repository}</td>
             <td><a href="{activityEntry.url}">{activityEntry.url}</a></td>
+            <td>{activityEntry.state}</td>
         </tr>
         {/for}
         </tbody>

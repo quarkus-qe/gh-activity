@@ -9,11 +9,15 @@ public class ActivityEntry {
     public Instant created;
     public String repository;
     public String url;
+    public String state;
+    public String labels;
 
-    public ActivityEntry(Instant created, String repository, String url) {
+    public ActivityEntry(Instant created, String repository, String url, String state, String labels) {
         this.created = created;
         this.repository = repository;
         this.url = url;
+        this.state = state;
+        this.labels = labels;
     }
 
     @Override
@@ -22,6 +26,8 @@ public class ActivityEntry {
                 "created=" + created +
                 ", repository='" + repository + '\'' +
                 ", url='" + url + '\'' +
+                ", state='" + state + '\'' +
+                ", labels='" + labels + '\'' +
                 '}';
     }
 }
