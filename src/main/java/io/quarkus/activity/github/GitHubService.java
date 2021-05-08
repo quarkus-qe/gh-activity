@@ -2,6 +2,7 @@ package io.quarkus.activity.github;
 
 import io.quarkus.activity.model.ActivityEntry;
 import io.quarkus.activity.model.GitHubActivities;
+import io.quarkus.activity.model.MonthlyStats;
 import io.quarkus.activity.model.User;
 import io.quarkus.qute.TemplateInstance;
 import io.quarkus.qute.CheckedTemplate;
@@ -14,8 +15,12 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,6 +46,11 @@ public class GitHubService {
         System.out.println("RS >> " + token);
     }
 
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM");
+
+    public List<String> getLogins() {
+        return logins;
+    }
 
     public List<GitHubActivities> getGitHubActivities() throws IOException {
         String query = Templates.latestActivity(logins, limit).render();
@@ -94,10 +104,45 @@ public class GitHubService {
         return activities;
     }
 
+    public MonthlyStats getMonthlyStats(LocalDate statsStart) throws IOException {
+        MonthlyStats stats = new MonthlyStats();
+        stats.updated = LocalDateTime.now();
+        for (String login : logins) {
+            stats.quarkusioPRs.put(login, new LinkedList<>());
+            stats.quarkusioIssues.put(login, new LinkedList<>());
+            stats.quarkusqePRs.put(login, new LinkedList<>());
+        }
+
+        LocalDate start = statsStart;
+        LocalDate stopTime = LocalDate.now().withDayOfMonth(2);
+
+
+        while (start.isBefore(stopTime)) {
+            LocalDate end = start.withDayOfMonth(start.lengthOfMonth());
+            String timeWindow = start + ".." + end;
+            stats.months.add(FORMATTER.format(start));
+
+            String query = Templates.monthlyActivity(logins, timeWindow).render();
+            JsonObject response = graphQLClient.graphql(token, new JsonObject().put("query", query));
+            handleErrors(response);
+
+            JsonObject dataJson = response.getJsonObject("data");
+
+            for (String login : logins) {
+                stats.quarkusioPRs.get(login).add(dataJson.getJsonObject(login + "_prs_quarkusio").getString("issueCount"));
+                stats.quarkusioIssues.get(login).add(dataJson.getJsonObject(login + "_issues_quarkusio").getString("issueCount"));
+                stats.quarkusqePRs.get(login).add(dataJson.getJsonObject(login + "_prs_quarkus_qe").getString("issueCount"));
+            }
+
+            start = start.plusMonths(1);
+        }
+        return stats;
+    }
 
     @CheckedTemplate
     private static class Templates {
         public static native TemplateInstance latestActivity(Collection<String> logins, Integer limit);
+        public static native TemplateInstance monthlyActivity(Collection<String> logins, String timeWindow);
     }
 
     private String extractLabels(JsonObject objectJson) {

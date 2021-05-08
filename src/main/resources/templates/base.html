@@ -16,13 +16,13 @@
         Activity
     </a>
 
-    {#for activity in activities}
-    <a class="header item" href="/#{activity.user.login}">
-        <small>{activity.user.login}</small>&nbsp;&nbsp;
+    {#for login in logins}
+    <a class="header item" href="/#{login}">
+        <small>{login}</small>&nbsp;&nbsp;
     </a>
     {/for}
 
-    <a class="header item" href="/tbd/">
+    <a class="header item" href="/monthly-stats">
         Monthly stats
     </a>
 </div>
