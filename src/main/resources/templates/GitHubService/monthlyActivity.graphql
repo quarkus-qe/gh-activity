@@ -3,13 +3,7 @@
   {login}_issues_quarkusio: search(query: "org:quarkusio author:{login} is:issue created:{timeWindow}", type: ISSUE, first: 1) {
     issueCount
   }
-  {login}_issues_quarkiverse: search(query: "org:quarkiverse author:{login} is:issue created:{timeWindow}", type: ISSUE, first: 1) {
-    issueCount
-  }
   {login}_prs_quarkusio: search(query: "org:quarkusio author:{login} is:pr created:{timeWindow}", type: ISSUE, first: 1) {
-    issueCount
-  }
-  {login}_prs_quarkiverse: search(query: "org:quarkiverse author:{login} is:pr created:{timeWindow}", type: ISSUE, first: 1) {
     issueCount
   }
   {login}_prs_quarkus_qe: search(query: "org:quarkus-qe author:{login} is:pr created:{timeWindow}", type: ISSUE, first: 1) {
