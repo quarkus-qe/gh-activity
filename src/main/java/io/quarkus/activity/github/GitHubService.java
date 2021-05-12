@@ -51,7 +51,6 @@ public class GitHubService {
     public GitHubService(
             @ConfigProperty(name = "activity.token") String token) {
         this.token = "Bearer " + token;
-        System.out.println("RS >> " + token);
     }
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM");
