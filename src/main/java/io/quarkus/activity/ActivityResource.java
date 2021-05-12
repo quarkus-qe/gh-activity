@@ -22,6 +22,9 @@ public class ActivityResource {
     GitHubMonthlyStatsService gitHubMonthlyStatsService;
 
     @Inject
+    GitHubOpenPrQueueService gitHubOpenPrQueueService;
+
+    @Inject
     GitHubService gitHubService;
 
     @Inject
@@ -29,6 +32,9 @@ public class ActivityResource {
 
     @Inject
     Template monthlyStats;
+
+    @Inject
+    Template openPrQueue;
 
     @GET
     @Produces(MediaType.TEXT_HTML)
@@ -48,6 +54,16 @@ public class ActivityResource {
                 "logins", gitHubService.getLogins(),
                 "stats", gitHubMonthlyStatsService.getMonthlyStats(),
                 "colors", Map.of("rsvoboda", "RED", "mjurc", "BLUE")
+        );
+    }
+
+    @GET
+    @Path("/open-pr-queue")
+    @Produces(MediaType.TEXT_HTML)
+    public TemplateInstance getOpenPrsQueue() throws IOException {
+        return openPrQueue.data(
+                "logins", gitHubService.getLogins(),
+                "organization", gitHubOpenPrQueueService.getOpenPrQueueInOrganization()
         );
     }
 }
