@@ -25,7 +25,7 @@ public class GitHubActivitiesService {
 
     private volatile LocalDateTime updated;
 
-    @Scheduled(every = "6H")
+    @Scheduled(every = "10m")
     public void updateActivities() throws IOException {
         ghActivities = buildGitHubActivities();
     }
