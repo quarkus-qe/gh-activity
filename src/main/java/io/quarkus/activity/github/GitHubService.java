@@ -3,25 +3,33 @@ package io.quarkus.activity.github;
 import io.quarkus.activity.model.ActivityEntry;
 import io.quarkus.activity.model.GitHubActivities;
 import io.quarkus.activity.model.MonthlyStats;
+import io.quarkus.activity.model.OpenPullRequestsQueueByRepositories;
+import io.quarkus.activity.model.PullRequestWithReviewers;
+import io.quarkus.activity.model.Repository;
 import io.quarkus.activity.model.User;
 import io.quarkus.qute.TemplateInstance;
 import io.quarkus.qute.CheckedTemplate;
 import io.quarkus.activity.graphql.GraphQLClient;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+
+import org.apache.commons.codec.binary.StringUtils;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.io.IOException;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
@@ -57,8 +65,7 @@ public class GitHubService {
         JsonObject response = graphQLClient.graphql(token, new JsonObject().put("query", query));
         handleErrors(response);
 
-        JsonObject dataJson = response
-                .getJsonObject("data");
+        JsonObject dataJson = response.getJsonObject("data");
 
         List<GitHubActivities> activities = new ArrayList<>(logins.size());
         for (String login : logins) {
@@ -116,7 +123,6 @@ public class GitHubService {
         LocalDate start = statsStart;
         LocalDate stopTime = LocalDate.now().withDayOfMonth(2);
 
-
         while (start.isBefore(stopTime)) {
             LocalDate end = start.withDayOfMonth(start.lengthOfMonth());
             String timeWindow = start + ".." + end;
@@ -139,10 +145,69 @@ public class GitHubService {
         return stats;
     }
 
+    public OpenPullRequestsQueueByRepositories getOpenPrQueueInOrganization(String organizationName) throws IOException {
+        OpenPullRequestsQueueByRepositories organization = new OpenPullRequestsQueueByRepositories();
+
+        List<Repository> repositories = getRepositoriesInOrganization(organizationName);
+
+        String query = Templates.openPullRequestsInRepositories(repositories, organizationName, limit).render();
+        JsonObject response = graphQLClient.graphql(token, new JsonObject().put("query", query));
+        handleErrors(response);
+
+        JsonObject dataJson = response.getJsonObject("data");
+
+        for (Repository repository : repositories) {
+            JsonArray pullRequestsNodesJson = dataJson.getJsonObject(repository.id + "_open_prs").getJsonObject("pullRequests").getJsonArray("nodes");
+
+            List<PullRequestWithReviewers> pullRequests = pullRequestsNodesJson.stream().map(prItem -> {
+                JsonObject prJsonItem = (JsonObject) prItem;
+                Instant createdAt = prJsonItem.getInstant("createdAt");
+                String title = prJsonItem.getString("title");
+                String repositoryUrl = prJsonItem.getString("url");
+                String author = prJsonItem.getJsonObject("author").getString("login");
+                Set<String> reviewers = new HashSet<>();
+                // Get from requested reviews (when reviewers have not started to look into the PR yet)
+                prJsonItem.getJsonObject("reviewRequests").getJsonArray("nodes")
+                        .stream().map(item -> ((JsonObject) item).getJsonObject("requestedReviewer").getString("login"))
+                        .forEach(reviewers::add);
+                // Get from already started reviews
+                prJsonItem.getJsonObject("reviews").getJsonArray("nodes")
+                        .stream().map(item -> ((JsonObject) item).getJsonObject("author").getString("login"))
+                        .filter(login -> !StringUtils.equals(login, author)) // discard author comments from reviews
+                        .forEach(reviewers::add);
+                return new PullRequestWithReviewers(createdAt, title, repositoryUrl, author, reviewers.stream().collect(
+                        Collectors.joining(", ")));
+            }).collect(Collectors.toList());
+
+            // Filter out repositories without pull requests
+            if (!pullRequests.isEmpty()) {
+                organization.repositories.put(repository.name, pullRequests);
+            }
+        }
+
+        organization.updated = LocalDateTime.now();
+
+        return organization;
+    }
+
+    private List<Repository> getRepositoriesInOrganization(String organization) throws IOException {
+        String query = Templates.repositoriesByOrganization(organization, limit).render();
+        JsonObject response = graphQLClient.graphql(token, new JsonObject().put("query", query));
+        handleErrors(response);
+
+        JsonArray dataJson = response.getJsonObject("data").getJsonObject("search").getJsonArray("edges");
+        return dataJson.stream()
+                .map(item -> ((JsonObject) item).getJsonObject("node").getString("name"))
+                .map(Repository::new)
+                .collect(Collectors.toList());
+    }
+
     @CheckedTemplate
     private static class Templates {
         public static native TemplateInstance latestActivity(Collection<String> logins, Integer limit);
         public static native TemplateInstance monthlyActivity(Collection<String> logins, String timeWindow);
+        public static native TemplateInstance repositoriesByOrganization(String organization, Integer limit);
+        public static native TemplateInstance openPullRequestsInRepositories(Collection<Repository> repositories, String organization, Integer limit);
     }
 
     private String extractLabels(JsonObject objectJson) {
