@@ -9,6 +9,9 @@
   {login}_prs_quarkus_qe: search(query: "org:quarkus-qe author:{login} is:pr created:{timeWindow}", type: ISSUE, first: 1) {
     issueCount
   }
+  {login}_reviews_quarkus_qe: search(query: "org:quarkus-qe reviewed-by:{login} is:pr merged:{timeWindow}", type: ISSUE, first: 1) {
+    issueCount
+  }
 {/for}
   rateLimit {
     cost

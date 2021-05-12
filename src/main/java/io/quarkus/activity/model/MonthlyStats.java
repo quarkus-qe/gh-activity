@@ -1,6 +1,7 @@
 package io.quarkus.activity.model;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
+import org.graalvm.options.OptionDescriptors;
 
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
@@ -15,4 +16,5 @@ public class MonthlyStats {
     public Map<String, List<String>> quarkusioPRs = new LinkedHashMap<>();
     public Map<String, List<String>> quarkusioIssues = new LinkedHashMap<>();
     public Map<String, List<String>> quarkusqePRs = new LinkedHashMap<>();
+    public Map<String, List<String>> quarkusqeReviews = new LinkedHashMap<>();
 }
