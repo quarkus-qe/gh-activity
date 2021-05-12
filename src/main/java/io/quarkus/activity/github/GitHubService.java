@@ -117,6 +117,7 @@ public class GitHubService {
             stats.quarkusioPRs.put(login, new LinkedList<>());
             stats.quarkusioIssues.put(login, new LinkedList<>());
             stats.quarkusqePRs.put(login, new LinkedList<>());
+            stats.quarkusqeReviews.put(login, new LinkedList<>());
         }
 
         LocalDate start = statsStart;
@@ -137,6 +138,7 @@ public class GitHubService {
                 stats.quarkusioPRs.get(login).add(dataJson.getJsonObject(login + "_prs_quarkusio").getString("issueCount"));
                 stats.quarkusioIssues.get(login).add(dataJson.getJsonObject(login + "_issues_quarkusio").getString("issueCount"));
                 stats.quarkusqePRs.get(login).add(dataJson.getJsonObject(login + "_prs_quarkus_qe").getString("issueCount"));
+                stats.quarkusqeReviews.get(login).add(dataJson.getJsonObject(login + "_reviews_quarkus_qe").getString("issueCount"));
             }
 
             start = start.plusMonths(1);
