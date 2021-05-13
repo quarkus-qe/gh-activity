@@ -15,6 +15,11 @@
         <canvas id="canvas-stacked-quarkus-qe-prs"></canvas>
     </div>
 
+    <h2>PRs merged per month in Quarkus QE GitHub organisation</h2>
+    <div class="ui message">
+        <canvas id="canvas-stacked-quarkus-qe-merged-prs"></canvas>
+    </div>
+
     <h2>Reviews for PRs merged per month in Quarkus QE GitHub organisation</h2>
     <div class="ui message">
         <canvas id="canvas-stacked-quarkus-qe-reviews"></canvas>
@@ -65,7 +70,7 @@
 					responsive: true,
 					scales: {
 						xAxes: [{ stacked: true }],
-						yAxes: [{ stacked: true, scaleLabel: { display: true, labelString: 'Number of PRs'} }]
+						yAxes: [{ stacked: true, scaleLabel: { display: true, labelString: 'Number of created PRs'} }]
 					}
 				}
 			};
@@ -100,7 +105,42 @@
 					responsive: true,
 					scales: {
 						xAxes: [{ stacked: true }],
-						yAxes: [{ stacked: true, scaleLabel: { display: true, labelString: 'Number of PRs'} }]
+						yAxes: [{ stacked: true, scaleLabel: { display: true, labelString: 'Number created of PRs'} }]
+					}
+				}
+			};
+			var barChartConfigQeMergedPr = {
+				type: 'bar',
+				data: {
+					labels: [
+					    {#for month in stats.months}
+                            "{month}",
+                        {/for}
+					],
+					datasets: [
+                    {#for entry in stats.quarkusqeMergedPRs}
+                    {
+						label: '{entry.key}',
+						backgroundColor: getColor({index}),
+						data: [
+						{#for value in entry.value}
+                            {value},
+                        {/for}
+						]
+					},
+                    {/for}
+					]
+				},
+				options: {
+					onClick: barChartClickEventQeMergedPr,
+					title: { display: true,	text: 'PRs merged per month in Quarkus QE GitHub organisation' },
+					tooltips: { mode: 'index', intersect: false },
+					legend: { onHover: function(e) { e.target.style.cursor = 'pointer'; } },
+					hover: { onHover: (event, chartElement) => { event.target.style.cursor = chartElement[0] ? 'pointer' : 'default'; } },
+					responsive: true,
+					scales: {
+						xAxes: [{ stacked: true }],
+						yAxes: [{ stacked: true, scaleLabel: { display: true, labelString: 'Number of merged PRs'} }]
 					}
 				}
 			};
@@ -182,6 +222,11 @@
 					window.open("https://github.com/search?q=author:" + selectedLogin + "+created:" + array[0]._model.label + "+is:pr+org:quarkus-qe", '_blank');
 				}
 			}
+			function barChartClickEventQeMergedPr(event, array){
+				if(array[0]) {
+					window.open("https://github.com/search?q=merged:" + array[0]._model.label + "+is:pr+org:quarkus-qe", '_blank');
+				}
+			}
 			function barChartClickEventQuarkPr(event, array){
 				if(array[0]) {
 					// console.table(array[0]._model);
@@ -229,6 +274,7 @@
 
 			window.onload = function() {
 				var ctxStackedQePr = document.getElementById('canvas-stacked-quarkus-qe-prs').getContext('2d');
+				var ctxStackedQeMergedPr = document.getElementById('canvas-stacked-quarkus-qe-merged-prs').getContext('2d');
 				var ctxStackedQuarkPr = document.getElementById('canvas-stacked-quarkusio-prs').getContext('2d');
 				var ctxStackedQuarkIs = document.getElementById('canvas-stacked-quarkusio-issues').getContext('2d');
 				var ctxStackedQeReviews = document.getElementById('canvas-stacked-quarkus-qe-reviews').getContext('2d');
@@ -236,6 +282,7 @@
 				window.barChartQuarkPr = new Chart(ctxStackedQuarkPr, barChartConfigQuarkPr);
 				window.barChartQuarkIs = new Chart(ctxStackedQuarkIs, barChartConfigQuarkIs);
 				window.barChartQePr = new Chart(ctxStackedQePr, barChartConfigQePr);
+				window.barChartQeMergedPr = new Chart(ctxStackedQeMergedPr, barChartConfigQeMergedPr);
 				window.barChartQeReviews = new Chart(ctxStackedQeReviews, barChartConfigQeReviews);
 
 			};
