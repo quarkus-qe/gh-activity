@@ -118,6 +118,7 @@ public class GitHubService {
             stats.quarkusioIssues.put(login, new LinkedList<>());
             stats.quarkusqePRs.put(login, new LinkedList<>());
             stats.quarkusqeReviews.put(login, new LinkedList<>());
+            stats.quarkusqeMergedPRs.put(login, new LinkedList<>());
         }
 
         LocalDate start = statsStart;
@@ -133,17 +134,36 @@ public class GitHubService {
             handleErrors(response);
 
             JsonObject dataJson = response.getJsonObject("data");
+            ArrayList<String> mergers = getPrMergers(timeWindow);
 
             for (String login : logins) {
                 stats.quarkusioPRs.get(login).add(dataJson.getJsonObject(login + "_prs_quarkusio").getString("issueCount"));
                 stats.quarkusioIssues.get(login).add(dataJson.getJsonObject(login + "_issues_quarkusio").getString("issueCount"));
                 stats.quarkusqePRs.get(login).add(dataJson.getJsonObject(login + "_prs_quarkus_qe").getString("issueCount"));
                 stats.quarkusqeReviews.get(login).add(dataJson.getJsonObject(login + "_reviews_quarkus_qe").getString("issueCount"));
+                stats.quarkusqeMergedPRs.get(login).add(String.valueOf(mergers.stream().filter(mergerLogin -> mergerLogin.equals(login)).count()));
             }
 
             start = start.plusMonths(1);
         }
         return stats;
+    }
+
+    private ArrayList<String> getPrMergers(String timeWindow) throws IOException {
+        JsonObject response;
+        String cursor = null;
+        ArrayList<String> mergers = new ArrayList<>();
+        do {
+            response = graphQLClient.graphql(token, new JsonObject().put("query", Templates.monthlyMergedPRs(timeWindow, cursor).render()));
+            handleErrors(response);
+
+            JsonArray nodesJsonArray = response.getJsonObject("data").getJsonObject("search").getJsonArray("nodes");
+            nodesJsonArray.stream().map(item -> ((JsonObject) item).getJsonObject("mergedBy").getString("login")).forEach(mergers::add);
+
+            JsonObject pageInfoJson = response.getJsonObject("data").getJsonObject("search").getJsonObject("pageInfo");
+            cursor = pageInfoJson.getBoolean("hasNextPage") ? pageInfoJson.getString("endCursor") : null;
+        } while (cursor != null);
+        return mergers;
     }
 
     public OpenPullRequestsQueueByRepositories getOpenPrQueueInOrganization(String organizationName) throws IOException {
@@ -207,6 +227,7 @@ public class GitHubService {
     private static class Templates {
         public static native TemplateInstance latestActivity(Collection<String> logins, Integer limit);
         public static native TemplateInstance monthlyActivity(Collection<String> logins, String timeWindow);
+        public static native TemplateInstance monthlyMergedPRs(String timeWindow, String cursor);
         public static native TemplateInstance repositoriesByOrganization(String organization, Integer limit);
         public static native TemplateInstance openPullRequestsInRepositories(Collection<Repository> repositories, String organization, Integer limit);
     }
