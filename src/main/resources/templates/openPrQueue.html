@@ -9,7 +9,27 @@
             <p>Updated {inject:prettyTime.format(organization.updated)} (refreshed every 10 minutes).</p>
         </div>
     </div>
+    <h2>Open Pull Requests Summary</h2>
+        <table class="ui celled striped table collapsing">
+            <thead>
+            <tr>
+                <th class="ten wide">Repo</th>
+                <th class="two wide">Count</th>
+            </tr>
+            </thead>
+            <tbody>
+            {#for entry in organization.repositories}
+            <tr>
+                <td><a href="#{entry.key}">{entry.key}</a></td>
+                <td><a href="#{entry.key}">{entry.value.size}</a></td>
+            </tr>
+            {/for}
+            </tbody>
+        </table>
+    </ul>
+
     {#for entry in organization.repositories}
+    <a name="{entry.key}"></a>
     <h2>{entry.value.size} Open Pull Requests in {entry.key}</h2>
     <table class="ui celled striped table">
         <thead>
