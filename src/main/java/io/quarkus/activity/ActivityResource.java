@@ -28,6 +28,9 @@ public class ActivityResource {
     GitHubService gitHubService;
 
     @Inject
+    GitHubDailyStatusService gitHubDailyStatusService;
+
+    @Inject
     Template activities;
 
     @Inject
@@ -35,6 +38,9 @@ public class ActivityResource {
 
     @Inject
     Template openPrQueue;
+
+    @Inject
+    Template dailyStatus;
 
     @GET
     @Produces(MediaType.TEXT_HTML)
@@ -64,6 +70,16 @@ public class ActivityResource {
         return openPrQueue.data(
                 "logins", gitHubService.getLogins(),
                 "organization", gitHubOpenPrQueueService.getOpenPrQueueInOrganization()
+        );
+    }
+
+    @GET
+    @Path("/daily-status")
+    @Produces(MediaType.TEXT_HTML)
+    public TemplateInstance getDailyStatus() throws IOException {
+        return dailyStatus.data(
+                "logins", gitHubService.getLogins(),
+                "repositories", gitHubDailyStatusService.getRepositoriesWithDailyStatus()
         );
     }
 }
