@@ -41,7 +41,7 @@ public class GitHubService {
 
     private final String token;
 
-    @ConfigProperty(name = "activity.logins", defaultValue = "rsvoboda,mjurc,pjgg,Sgitario,kshpak,jsmrcka")
+    @ConfigProperty(name = "activity.logins", defaultValue = "rsvoboda,mjurc,pjgg,Sgitario,kshpak,jsmrcka,fedinskiy")
     List<String> logins;
 
     @ConfigProperty(name = "activity.limit", defaultValue = "100")
