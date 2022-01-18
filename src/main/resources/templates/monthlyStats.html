@@ -51,7 +51,7 @@
                     {#for entry in stats.quarkusioPRs}
                     {
 						label: '{entry.key}',
-						backgroundColor: getColor({index}),
+						backgroundColor: getColor({entry_index}),
 						data: [
 						{#for value in entry.value}
                             {value},
@@ -86,7 +86,7 @@
                     {#for entry in stats.quarkusqePRs}
                     {
 						label: '{entry.key}',
-						backgroundColor: getColor({index}),
+						backgroundColor: getColor({entry_index}),
 						data: [
 						{#for value in entry.value}
                             {value},
@@ -121,7 +121,7 @@
                     {#for entry in stats.quarkusqeMergedPRs}
                     {
 						label: '{entry.key}',
-						backgroundColor: getColor({index}),
+						backgroundColor: getColor({entry_index}),
 						data: [
 						{#for value in entry.value}
                             {value},
@@ -156,7 +156,7 @@
                     {#for entry in stats.quarkusqeReviews}
                     {
 						label: '{entry.key}',
-						backgroundColor: getColor({index}),
+						backgroundColor: getColor({entry_index}),
 						data: [
 						{#for value in entry.value}
                             {value},
@@ -191,7 +191,7 @@
                     {#for entry in stats.quarkusioIssues}
                     {
 						label: '{entry.key}',
-						backgroundColor: getColor({index}),
+						backgroundColor: getColor({entry_index}),
 						data: [
 						{#for value in entry.value}
                             {value},
@@ -268,7 +268,7 @@
             }
 			function getLogin(index) {
 			    {#for login in logins}
-                    if (index == {index}) { return "{login}"}
+                    if (index == {login_index}) { return "{login}"}
                 {/for}
             }
 
