@@ -17,6 +17,7 @@
     <quarkus.platform.version>2.7.4.Final</quarkus.platform.version>
     <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
     <quarkus-prettytime.version>0.2.1</quarkus-prettytime.version>
+    <com.apptastic.rssreader.version>2.5.0</com.apptastic.rssreader.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -36,16 +37,21 @@
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-rest-client-jackson</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.quarkus</groupId>
       <artifactId>quarkus-resteasy-qute</artifactId>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-rest-client</artifactId>
     </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-rest-client-jackson</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.apptastic</groupId>
+      <artifactId>rssreader</artifactId>
+      <version>${com.apptastic.rssreader.version}</version>
+  </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-openshift</artifactId>
@@ -137,4 +143,11 @@
       </properties>
     </profile>
   </profiles>
+  <repositories>
+    <!-- Required by rssreader -->
+    <repository>
+      <id>jcenter</id>
+      <url>https://jcenter.bintray.com</url>
+    </repository>
+  </repositories>
 </project>

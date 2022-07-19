@@ -7,6 +7,11 @@
     <h2>{entry.key}</h2>
     <a href="{entry.value}"><img src="{entry.value}/badge.svg" alt="{entry.key}"></a>
     {/for}
+
+    {#for entry in jenkinsJobs}
+    <h2>{entry.title}</h2>
+    <a href="{entry.link}"><img src="{entry.badge}" alt="{entry.title}"></a>
+    {/for}
 </div>
 {/body}
 {/include}

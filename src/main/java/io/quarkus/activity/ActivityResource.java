@@ -79,7 +79,8 @@ public class ActivityResource {
     public TemplateInstance getDailyStatus() throws IOException {
         return dailyStatus.data(
                 "logins", gitHubService.getLogins(),
-                "repositories", gitHubDailyStatusService.getRepositoriesWithDailyStatus()
+                "repositories", gitHubDailyStatusService.getRepositoriesWithDailyStatus(),
+                "jenkinsJobs", gitHubDailyStatusService.getJenkinsJobsWithDailyStatus()
         );
     }
 }
