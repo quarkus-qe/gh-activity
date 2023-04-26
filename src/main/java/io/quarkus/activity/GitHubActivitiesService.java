@@ -8,8 +8,8 @@ import io.quarkus.scheduler.Scheduled;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
