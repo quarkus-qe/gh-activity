@@ -51,6 +51,10 @@
       <artifactId>quarkus-openshift</artifactId>
     </dependency>
     <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-info</artifactId>
+    </dependency>
+    <dependency>
       <groupId>io.quarkiverse.prettytime</groupId>
       <artifactId>quarkus-prettytime</artifactId>
       <version>${quarkus-prettytime.version}</version>
