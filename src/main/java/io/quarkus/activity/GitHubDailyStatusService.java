@@ -3,8 +3,8 @@ package io.quarkus.activity;
 import java.util.Map;
 import java.util.TreeMap;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import io.quarkus.activity.model.DailyStatusRepositories;
 
 @ApplicationScoped

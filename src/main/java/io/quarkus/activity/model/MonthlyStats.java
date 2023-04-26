@@ -3,7 +3,7 @@ package io.quarkus.activity.model;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.graalvm.options.OptionDescriptors;
 
-import javax.ws.rs.core.AbstractMultivaluedMap;
+import jakarta.ws.rs.core.AbstractMultivaluedMap;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
