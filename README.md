@@ -11,6 +11,15 @@ ACTIVITY_TOKEN=<TOKEN>
 
 The token only needs read access to the repository.
 
+The application visualize the information about the Quarkus QE user.
+For that reason, you need to pass the Quarkus QE member logins.
+The application accepts these logins as runtime configuration property with a key `activity.logins`.
+For example, you can set the logins with a system property when starting the application:
+
+```bash
+-Dactivity.logins=qe-user-name-1,qe-user-name-2
+```
+
 ## Running the application in dev mode
 
 You can run your application in dev mode that enables live coding using:
@@ -44,11 +53,11 @@ You can then execute your native executable with: `ACTIVITY_TOKEN=your_token ./t
 ## Deploying to OpenShift
 JVM build:
 ```shell
-mvn clean package -Dquarkus.kubernetes.deploy=true
+mvn clean package -Dquarkus.kubernetes.deploy=true -Dactivity.logins=user-name-1
 ```
 Native build:
 ```shell
-mvn clean package -Dquarkus.kubernetes.deploy=true -Dquarkus.native.container-build=true -Dnative
+mvn clean package -Dquarkus.kubernetes.deploy=true -Dquarkus.native.container-build=true -Dnative -Dactivity.logins=user-name-1
 ```
 
 OpenShift secret for GitHub API needs to be created beforehand.
