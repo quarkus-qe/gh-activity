@@ -13,7 +13,6 @@ import io.quarkus.activity.graphql.GraphQLClient;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
-import org.apache.commons.codec.binary.StringUtils;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
@@ -29,6 +28,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -41,7 +41,7 @@ public class GitHubService {
 
     private final String token;
 
-    @ConfigProperty(name = "activity.logins", defaultValue = "rsvoboda,mjurc,jsmrcka,fedinskiy,michalvavrik,jedla97,mocenas")
+    @ConfigProperty(name = "activity.logins")
     List<String> logins;
 
     @ConfigProperty(name = "activity.limit", defaultValue = "100")
@@ -194,7 +194,7 @@ public class GitHubService {
                 // Get from already started reviews
                 prJsonItem.getJsonObject("reviews").getJsonArray("nodes")
                         .stream().map(item -> ((JsonObject) item).getJsonObject("author").getString("login"))
-                        .filter(login -> !StringUtils.equals(login, author)) // discard author comments from reviews
+                        .filter(login -> login == null || !login.equals(author)) // discard author comments from reviews
                         .forEach(reviewers::add);
                 return new PullRequestWithReviewers(createdAt, title, repositoryUrl, author, reviewers.stream().collect(
                         Collectors.joining(", ")));
