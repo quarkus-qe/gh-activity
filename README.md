@@ -20,11 +20,43 @@ For example, you can set the logins with a system property when starting the app
 -Dactivity.logins=qe-user-name-1,qe-user-name-2
 ```
 
+## Secure the application
+
+By default, the application only grants access to authenticated users with role `quarkus-qe`.
+Quarkus SecurityIdentity roles are mapped from access token claim `realm_access/roles`.
+If you use this application locally, you can disable security with following configuration property:
+
+```
+activity.security.enabled=false
+```
+
+As always, you can set this configuration property as a system property like this:
+
+```
+-Dactivity.security.enabled=false
+```
+
+## Configure OIDC extension
+
+Following 3 configuration properties must be set:
+
+```
+quarkus.oidc.auth-server-url=https://your-auth-server/auth/realms/your-realm
+quarkus.oidc.client-id=your-client-id
+quarkus.oidc.credentials.secret=your-client-secret
+```
+
 ## Running the application in dev mode
 
 You can run your application in dev mode that enables live coding using:
 ```shell script
 mvn compile quarkus:dev
+```
+
+By default, the security is disabled in DEV mode, however you can enable it like this:
+
+```shell script
+mvn compile quarkus:dev -Dactivity.security.enabled=true
 ```
 
 > **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at http://localhost:8080/q/dev/.
@@ -72,3 +104,13 @@ stringData:
 
 Deploy the secret using `oc create -f secret.yaml` command, update it using `oc replace -f secret.yaml` command. 
 
+If the `activity.security.enabled` configuration key is set to true, an OIDC client secret must be provided.
+Please create the secret called `gh-activity-oidc-client-secret` using same steps as described above.
+The `stringData` should look like this: 
+```
+OIDC_CLIENT_SECRET: your-client-secret
+OIDC_CLIENT_ID: your-client-id
+```
+
+Please note that if you want OpenShift route to be exposed for you, just set `quarkus.openshift.route.expose=true` inside the `application.properties` file.
+It's disabled by default as we create route with the `oc` command line tool.
