@@ -1,8 +1,8 @@
 package io.quarkus.activity;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -45,5 +45,9 @@ public class GitHubOpenPrQueueService {
 
     private OpenPullRequestsQueueByRepositories buildOpenPrQueueInOrganization() throws IOException {
         return gitHubService.getOpenPrQueueInOrganization(quarkusQeOrganization);
+    }
+
+    public synchronized Optional<LocalDateTime> getLastUpdated() {
+        return Optional.ofNullable(openPrQueueInOrganization).map(queue -> queue.updated);
     }
 }
