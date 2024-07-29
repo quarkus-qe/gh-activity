@@ -1,6 +1,7 @@
 package io.quarkus.activity.graphql;
 
 import io.vertx.core.json.JsonObject;
+import jakarta.inject.Singleton;
 import org.eclipse.microprofile.faulttolerance.Retry;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
@@ -12,6 +13,7 @@ import static java.time.temporal.ChronoUnit.SECONDS;
 
 @Retry(delay = 2, delayUnit = SECONDS)
 @RegisterRestClient(baseUri = "https://api.github.com/graphql")
+@Singleton
 public interface GraphQLClient {
 
     @POST
