@@ -15,4 +15,4 @@ jobs:
         java-version: '21'
         distribution: 'temurin'
     - name: Build with Maven
-      run: mvn --batch-mode --no-transfer-progress package
+      run: ./mvnw --show-version --batch-mode --no-transfer-progress package
