@@ -18,6 +18,8 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import org.jboss.logging.Logger;
+
 import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -28,12 +30,12 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class GitHubService {
+    private static final Logger LOG = Logger.getLogger(GitHubService.class);
 
     @Inject
     @RestClient
@@ -61,7 +63,7 @@ public class GitHubService {
 
     public List<GitHubActivities> getGitHubActivities() throws IOException {
         String query = Templates.latestActivity(logins, limit).render();
-        JsonObject response = graphQLClient.graphql(token, new JsonObject().put("query", query));
+        JsonObject response = sendQuery(query);
         handleErrors(response);
 
         JsonObject dataJson = response.getJsonObject("data");
@@ -130,7 +132,7 @@ public class GitHubService {
             stats.months.add(FORMATTER.format(start));
 
             String query = Templates.monthlyActivity(logins, timeWindow).render();
-            JsonObject response = graphQLClient.graphql(token, new JsonObject().put("query", query));
+            JsonObject response = sendQuery(query);
             handleErrors(response);
 
             JsonObject dataJson = response.getJsonObject("data");
@@ -154,7 +156,8 @@ public class GitHubService {
         String cursor = null;
         ArrayList<String> mergers = new ArrayList<>();
         do {
-            response = graphQLClient.graphql(token, new JsonObject().put("query", Templates.monthlyMergedPRs(timeWindow, cursor).render()));
+            String query = Templates.monthlyMergedPRs(timeWindow, cursor).render();
+            response = sendQuery(query);
             handleErrors(response);
 
             JsonArray nodesJsonArray = response.getJsonObject("data").getJsonObject("search").getJsonArray("nodes");
@@ -172,7 +175,7 @@ public class GitHubService {
         List<Repository> repositories = getRepositoriesInOrganization(organizationName);
 
         String query = Templates.openPullRequestsInRepositories(repositories, organizationName, limit).render();
-        JsonObject response = graphQLClient.graphql(token, new JsonObject().put("query", query));
+        JsonObject response = sendQuery(query);
         handleErrors(response);
 
         JsonObject dataJson = response.getJsonObject("data");
@@ -213,7 +216,7 @@ public class GitHubService {
 
     private List<Repository> getRepositoriesInOrganization(String organization) throws IOException {
         String query = Templates.repositoriesByOrganization(organization, limit).render();
-        JsonObject response = graphQLClient.graphql(token, new JsonObject().put("query", query));
+        JsonObject response = sendQuery(query);
         handleErrors(response);
 
         JsonArray dataJson = response.getJsonObject("data").getJsonObject("search").getJsonArray("edges");
@@ -221,6 +224,13 @@ public class GitHubService {
                 .map(item -> ((JsonObject) item).getJsonObject("node").getString("name"))
                 .map(Repository::new)
                 .collect(Collectors.toList());
+    }
+
+    private JsonObject sendQuery(String query) {
+        JsonObject jsonQuery = new JsonObject().put("query", query);
+        LOG.info("Retrieving results of this query: " + jsonQuery.encode());
+        JsonObject response = graphQLClient.graphql(token, jsonQuery);
+        return response;
     }
 
     @CheckedTemplate
