@@ -34,8 +34,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
-public class GitHubService {
-    private static final Logger LOG = Logger.getLogger(GitHubService.class);
+public class GitHubClient {
+    private static final Logger LOG = Logger.getLogger(GitHubClient.class);
 
     @Inject
     @RestClient
@@ -50,7 +50,7 @@ public class GitHubService {
     int limit;
 
     @Inject
-    public GitHubService(
+    public GitHubClient(
             @ConfigProperty(name = "activity.token") String token) {
         this.token = "Bearer " + token;
     }
@@ -228,7 +228,6 @@ public class GitHubService {
 
     private JsonObject sendQuery(String query) {
         JsonObject jsonQuery = new JsonObject().put("query", query);
-        LOG.info("Retrieving results of this query: " + jsonQuery.encode());
         JsonObject response = graphQLClient.graphql(token, jsonQuery);
         return response;
     }
