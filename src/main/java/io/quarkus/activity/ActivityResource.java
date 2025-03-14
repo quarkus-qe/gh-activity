@@ -1,6 +1,6 @@
 package io.quarkus.activity;
 
-import io.quarkus.activity.github.GitHubService;
+import io.quarkus.activity.github.GitHubClient;
 import io.quarkus.qute.Template;
 import io.quarkus.qute.TemplateInstance;
 
@@ -25,7 +25,7 @@ public class ActivityResource {
     GitHubOpenPrQueueService gitHubOpenPrQueueService;
 
     @Inject
-    GitHubService gitHubService;
+    GitHubClient gitHubService;
 
     @Inject
     GitHubDailyStatusService gitHubDailyStatusService;
