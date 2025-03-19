@@ -27,16 +27,7 @@ public class GitHubMonthlyStatsService {
     }
 
     public MonthlyStats getMonthlyStats() throws IOException {
-        MonthlyStats localStats = monthlyStats;
-        if (localStats == null) {
-            synchronized (this) {
-                localStats = monthlyStats;
-                if (monthlyStats == null) {
-                    monthlyStats = localStats = buildMonthlyStats();
-                }
-            }
-        }
-        return localStats;
+        return monthlyStats == null ? new MonthlyStats() : monthlyStats;
     }
 
     private MonthlyStats buildMonthlyStats() throws IOException {
