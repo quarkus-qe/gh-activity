@@ -30,17 +30,7 @@ public class GitHubOpenPrQueueService {
     }
 
     public OpenPullRequestsQueueByRepositories getOpenPrQueueInOrganization() throws IOException {
-        OpenPullRequestsQueueByRepositories localStats = openPrQueueInOrganization;
-        if (localStats == null) {
-            synchronized (this) {
-                localStats = openPrQueueInOrganization;
-                if (openPrQueueInOrganization == null) {
-                    openPrQueueInOrganization = localStats = buildOpenPrQueueInOrganization();
-                }
-            }
-        }
-
-        return localStats;
+        return openPrQueueInOrganization == null ? new OpenPullRequestsQueueByRepositories() : openPrQueueInOrganization;
     }
 
     private OpenPullRequestsQueueByRepositories buildOpenPrQueueInOrganization() throws IOException {
