@@ -31,16 +31,7 @@ public class GitHubActivitiesService {
     }
 
     public List<GitHubActivities> getGitHubActivities() throws IOException {
-        List<GitHubActivities> localGhActivities = ghActivities;
-        if (localGhActivities == null) {
-            synchronized (this) {
-                localGhActivities = ghActivities;
-                if (ghActivities == null) {
-                    ghActivities = localGhActivities = buildGitHubActivities();
-                }
-            }
-        }
-        return localGhActivities;
+        return ghActivities == null ? new ArrayList<>() : ghActivities;
     }
 
     // Call this method after `getGitHubActivities`
