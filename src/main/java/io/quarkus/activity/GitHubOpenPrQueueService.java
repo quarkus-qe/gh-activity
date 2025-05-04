@@ -9,7 +9,7 @@ import jakarta.inject.Inject;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
-import io.quarkus.activity.github.GitHubService;
+import io.quarkus.activity.github.GitHubClient;
 import io.quarkus.activity.model.OpenPullRequestsQueueByRepositories;
 import io.quarkus.scheduler.Scheduled;
 
@@ -17,7 +17,7 @@ import io.quarkus.scheduler.Scheduled;
 public class GitHubOpenPrQueueService {
 
     @Inject
-    GitHubService gitHubService;
+    GitHubClient gitHubService;
 
     private volatile OpenPullRequestsQueueByRepositories openPrQueueInOrganization;
 
