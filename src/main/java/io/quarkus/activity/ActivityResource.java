@@ -49,7 +49,8 @@ public class ActivityResource {
         return activities.data(
                 "logins", gitHubService.getLogins(),
                 "activities", gitHubActivitiesService.getGitHubActivities(),
-                "updated", gitHubActivitiesService.getUpdated());
+                "updated", gitHubActivitiesService.getUpdated(),
+                "limit", gitHubService.getLimit());
     }
 
     @GET

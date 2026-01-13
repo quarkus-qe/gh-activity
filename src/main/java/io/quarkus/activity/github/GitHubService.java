@@ -46,7 +46,7 @@ public class GitHubService {
     @ConfigProperty(name = "activity.logins")
     List<String> logins;
 
-    @ConfigProperty(name = "activity.limit", defaultValue = "100")
+    @ConfigProperty(name = "activity.limit", defaultValue = "50")
     int limit;
 
     @Inject
@@ -267,4 +267,7 @@ public class GitHubService {
         }
     }
 
+    public int getLimit() {
+        return limit;
+    }
 }
