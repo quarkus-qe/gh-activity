@@ -6,7 +6,7 @@
     <div class="ui icon message">
         <i class="small sync icon"></i>
         <div class="content">
-            <p>Updated {inject:prettyTime.format(updated)} (refreshed every 10 minutes). Shows up to 100 latest records per area.</p>
+            <p>Updated {inject:prettyTime.format(updated)} (refreshed every 10 minutes). Shows up to {limit} latest records per area.</p>
         </div>
     </div>
     {#for activity in activities}
